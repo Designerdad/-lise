@@ -14,683 +14,357 @@
     --sage-dark: #4A6B47;
     --terracotta: #C4714A;
     --terra-light: #F0D5C8;
-    --blush: #E8C5B8;
     --charcoal: #2C2C2A;
     --muted: #7A7872;
     --border: rgba(44,44,42,0.1);
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); min-height: 100vh; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--charcoal);
-    min-height: 100vh;
-  }
-
-  /* Header */
   .header {
     background: var(--warm-white);
     border-bottom: 1px solid var(--border);
-    padding: 1.5rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
   }
-
-  .header-left { display: flex; align-items: center; gap: 14px; }
-
+  .header-left { display: flex; align-items: center; gap: 12px; }
   .avatar {
-    width: 48px; height: 48px;
-    border-radius: 50%;
+    width: 44px; height: 44px; border-radius: 50%;
     background: var(--terra-light);
     display: flex; align-items: center; justify-content: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    color: var(--terracotta);
+    font-family: 'Playfair Display', serif; font-size: 18px; color: var(--terracotta);
   }
+  .header-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; }
+  .header-age { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .header-right { text-align: right; font-size: 11px; color: var(--muted); line-height: 1.5; }
 
-  .header-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    font-weight: 400;
-    color: var(--charcoal);
-  }
+  .main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem; }
 
-  .header-age {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-
-  .header-date {
-    font-size: 12px;
-    color: var(--muted);
-    text-align: right;
-  }
-
-  /* Main layout */
-  .main {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-  }
-
-  /* Brief section */
   .brief-card {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.75rem;
-    margin-bottom: 1.5rem;
-    position: relative;
-    overflow: hidden;
+    background: var(--warm-white); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem; margin-bottom: 1.25rem;
+    position: relative; overflow: hidden;
   }
-
   .brief-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 4px; height: 100%;
-    background: var(--sage);
-    border-radius: 4px 0 0 4px;
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%; background: var(--sage);
   }
+  .brief-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+  .brief-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 400; }
+  .pills { display: flex; gap: 5px; flex-wrap: wrap; }
+  .pill { font-size: 10px; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); color: var(--muted); background: var(--cream); }
+  .brief-text { font-size: 14px; line-height: 1.8; color: var(--charcoal); }
 
-  .brief-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  .domains { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 1.25rem; }
+  .domain-card {
+    background: var(--warm-white); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.1rem; transition: all 0.2s;
+  }
+  .domain-card:hover { border-color: var(--sage-light); transform: translateY(-1px); }
+  .domain-icon { font-size: 18px; margin-bottom: 8px; display: block; }
+  .domain-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 5px; }
+  .domain-title { font-family: 'Playfair Display', serif; font-size: 14px; margin-bottom: 7px; }
+  .domain-content { font-size: 13px; line-height: 1.6; color: var(--muted); }
+  .domain-tag { display: inline-block; margin-top: 8px; font-size: 10px; padding: 2px 8px; border-radius: 99px; }
+  .tag-sage { background: #E1F5EE; color: #085041; }
+  .tag-terra { background: var(--terra-light); color: #7a3820; }
+  .tag-amber { background: #FAEEDA; color: #633806; }
+
+  .month-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+  .month-nav button {
+    padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--warm-white); cursor: pointer; font-size: 13px; color: var(--muted);
+    font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+  }
+  .month-nav button:hover:not(:disabled) { border-color: var(--sage); color: var(--sage-dark); }
+  .month-nav button:disabled { opacity: 0.3; cursor: default; }
+  .month-label { flex: 1; text-align: center; font-family: 'Playfair Display', serif; font-size: 15px; }
+
+  .sources { background: var(--warm-white); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
+  .sources-title { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 10px; }
+  .sources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 6px; }
+  .source-item {
+    display: flex; align-items: center; gap: 7px;
+    padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border);
+    font-size: 12px; color: var(--charcoal); background: var(--cream);
+    text-decoration: none; transition: all 0.15s;
+  }
+  .source-item:hover { border-color: var(--sage-light); background: #EDF5EE; }
+  .source-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  .timeline { background: var(--warm-white); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
+  .timeline-title { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px; }
+  .timeline-bar { position: relative; height: 5px; background: var(--sage-light); border-radius: 99px; margin-bottom: 8px; }
+  .timeline-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--sage); border-radius: 99px; transition: width 0.5s ease; }
+  .timeline-marker {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--terracotta); border: 2px solid white; box-shadow: 0 0 0 2px var(--terracotta);
+    transition: left 0.5s ease;
+  }
+  .timeline-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+  .premature-note {
+    background: #EDF5EE; border: 1px solid var(--sage-light);
+    border-radius: 10px; padding: 0.75rem 1rem;
+    font-size: 12px; color: var(--sage-dark); line-height: 1.6;
     margin-bottom: 1.25rem;
   }
 
-  .brief-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 17px;
-    font-weight: 400;
+  .ask-claude {
+    background: var(--warm-white); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1rem 1.25rem;
+    font-size: 13px; color: var(--muted); line-height: 1.6; text-align: center;
   }
+  .ask-claude a { color: var(--sage-dark); }
 
-  .source-pills {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .pill {
-    font-size: 10px;
-    padding: 3px 9px;
-    border-radius: 99px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    background: var(--cream);
-    letter-spacing: 0.03em;
-  }
-
-  .brief-content {
-    font-size: 14px;
-    line-height: 1.75;
-    color: var(--charcoal);
-    min-height: 80px;
-  }
-
-  .loading-dots {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    padding: 1rem 0;
-  }
-
-  .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--sage);
-    animation: pulse 1.2s ease-in-out infinite;
-  }
-
-  .dot:nth-child(2) { animation-delay: 0.2s; }
-  .dot:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 0.3; transform: scale(0.8); }
-    50% { opacity: 1; transform: scale(1); }
-  }
-
-  .regenerate-btn {
-    margin-top: 1rem;
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: transparent;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .regenerate-btn:hover {
-    background: var(--cream);
-    color: var(--charcoal);
-  }
-
-  /* 3 domain cards */
-  .domains {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 12px;
-    margin-bottom: 1.5rem;
-  }
-
-  .domain-card {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.25rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .domain-card:hover {
-    border-color: var(--sage-light);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-  }
-
-  .domain-icon {
-    font-size: 22px;
-    margin-bottom: 10px;
-    display: block;
-  }
-
-  .domain-label {
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-
-  .domain-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    font-weight: 400;
-    margin-bottom: 8px;
-    color: var(--charcoal);
-  }
-
-  .domain-content {
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--muted);
-    min-height: 40px;
-  }
-
-  .domain-ask {
-    margin-top: 12px;
-    font-size: 12px;
-    color: var(--sage-dark);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .domain-card:hover .domain-ask { opacity: 1; }
-
-  /* Sources section */
-  .sources-section {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .sources-title {
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-bottom: 12px;
-  }
-
-  .sources-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 8px;
-  }
-
-  .source-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    font-size: 12px;
-    color: var(--charcoal);
-    cursor: pointer;
-    transition: all 0.15s;
-    background: var(--cream);
-  }
-
-  .source-item:hover {
-    border-color: var(--sage-light);
-    background: #EDF5EE;
-  }
-
-  .source-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--sage);
-    flex-shrink: 0;
-  }
-
-  /* Age timeline */
-  .timeline {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.25rem 1.5rem;
-  }
-
-  .timeline-title {
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-bottom: 14px;
-  }
-
-  .timeline-bar {
-    position: relative;
-    height: 6px;
-    background: var(--sage-light);
-    border-radius: 99px;
-    margin-bottom: 10px;
-  }
-
-  .timeline-fill {
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    background: var(--sage);
-    border-radius: 99px;
-    transition: width 0.6s ease;
-  }
-
-  .timeline-marker {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 14px; height: 14px;
-    border-radius: 50%;
-    background: var(--terracotta);
-    border: 2px solid white;
-    box-shadow: 0 0 0 2px var(--terracotta);
-  }
-
-  .timeline-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  /* Question box */
-  .question-box {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 10px;
-  }
-
-  .question-input {
-    flex: 1;
-    padding: 10px 14px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--warm-white);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--charcoal);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .question-input:focus { border-color: var(--sage); }
-  .question-input::placeholder { color: var(--muted); }
-
-  .question-btn {
-    padding: 10px 18px;
-    border-radius: 10px;
-    border: none;
-    background: var(--sage-dark);
-    color: white;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: background 0.2s;
-    white-space: nowrap;
-  }
-
-  .question-btn:hover { background: var(--sage); }
-
-  /* Chat thread */
-  .chat-thread {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .chat-bubble {
-    padding: 10px 14px;
-    border-radius: 12px;
-    font-size: 13px;
-    line-height: 1.6;
-    max-width: 85%;
-  }
-
-  .chat-bubble.user {
-    align-self: flex-end;
-    background: var(--terra-light);
-    color: var(--charcoal);
-  }
-
-  .chat-bubble.ai {
-    align-self: flex-start;
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    color: var(--charcoal);
-  }
-
-  /* Fade in */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .fade-in { animation: fadeIn 0.4s ease forwards; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.35s ease forwards; }
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-left">
-    <div class="avatar">É</div>
+    <div class="avatar">E</div>
     <div>
       <div class="header-name">Élise</div>
-      <div class="header-age" id="headerAge">Calcul de l'âge...</div>
+      <div class="header-age" id="headerAge">—</div>
     </div>
   </div>
-  <div class="header-date" id="headerDate"></div>
+  <div class="header-right" id="headerRight">—</div>
 </div>
 
 <div class="main">
 
-  <!-- Brief IA -->
+  <div class="premature-note">
+    Elise est nee prematurement (5 sem. avant terme). Tous les conseils sont bases sur son <strong>age corrige</strong>, comme recommande par les pediatres. Elle est au lait maternise en poudre avec diversification deja commencee.
+  </div>
+
+  <div class="month-nav">
+    <button id="btnPrev" onclick="changeMonth(-1)">Mois prec.</button>
+    <div class="month-label" id="monthLabel">—</div>
+    <button id="btnNext" onclick="changeMonth(1)">Mois suiv.</button>
+  </div>
+
   <div class="brief-card">
     <div class="brief-header">
       <div class="brief-title">Brief de la semaine</div>
-      <div class="source-pills">
+      <div class="pills">
         <span class="pill">CDC</span>
         <span class="pill">UNICEF</span>
-        <span class="pill">Naître & Grandir</span>
+        <span class="pill">Naitre &amp; Grandir</span>
         <span class="pill">Montessori</span>
       </div>
     </div>
-    <div class="brief-content" id="briefContent">
-      <div class="loading-dots">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-      </div>
-    </div>
-    <button class="regenerate-btn" onclick="loadBrief()">↺ Actualiser le brief</button>
+    <div class="brief-text fade-in" id="briefText">—</div>
   </div>
 
-  <!-- 3 Domains -->
-  <div class="domains" id="domainsGrid">
-    <div class="domain-card" onclick="askDomain('développement moteur et cognitif')">
-      <span class="domain-icon">🌱</span>
-      <div class="domain-label">Développement</div>
-      <div class="domain-title" id="dev-title">Chargement...</div>
-      <div class="domain-content" id="dev-content"><div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-      <div class="domain-ask">Approfondir ce sujet →</div>
-    </div>
-    <div class="domain-card" onclick="askDomain('alimentation et diversification')">
-      <span class="domain-icon">🍎</span>
-      <div class="domain-label">Alimentation</div>
-      <div class="domain-title" id="alim-title">Chargement...</div>
-      <div class="domain-content" id="alim-content"><div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-      <div class="domain-ask">Approfondir ce sujet →</div>
-    </div>
-    <div class="domain-card" onclick="askDomain('éveil et apprentissage Montessori')">
-      <span class="domain-icon">✨</span>
-      <div class="domain-label">Éveil & Montessori</div>
-      <div class="domain-title" id="eveil-title">Chargement...</div>
-      <div class="domain-content" id="eveil-content"><div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-      <div class="domain-ask">Approfondir ce sujet →</div>
-    </div>
-  </div>
+  <div class="domains" id="domainsGrid"></div>
 
-  <!-- Sources -->
-  <div class="sources-section">
-    <div class="sources-title">Sources consultées</div>
+  <div class="sources">
+    <div class="sources-title">Sources de reference</div>
     <div class="sources-grid">
-      <div class="source-item" onclick="window.open('https://www.cdc.gov/ncbddd/actearly/milestones/milestones-6mo.html','_blank')">
-        <div class="source-dot"></div>CDC Milestone Tracker
-      </div>
-      <div class="source-item" onclick="window.open('https://www.unicef.org/parenting','_blank')">
-        <div class="source-dot"></div>UNICEF Parenting
-      </div>
-      <div class="source-item" onclick="window.open('https://naitreetgrandir.com','_blank')">
-        <div class="source-dot"></div>Naître et Grandir
-      </div>
-      <div class="source-item" onclick="window.open('https://www.montessori.com','_blank')">
-        <div class="source-dot"></div>Montessori
-      </div>
+      <a class="source-item" href="https://www.cdc.gov/ncbddd/actearly/milestones/index.html" target="_blank"><div class="source-dot"></div>CDC Milestone Tracker</a>
+      <a class="source-item" href="https://www.unicef.org/parenting" target="_blank"><div class="source-dot"></div>UNICEF Parenting</a>
+      <a class="source-item" href="https://naitreetgrandir.com" target="_blank"><div class="source-dot"></div>Naitre et Grandir</a>
+      <a class="source-item" href="https://www.montessori.com" target="_blank"><div class="source-dot"></div>Montessori</a>
     </div>
   </div>
 
-  <!-- Timeline -->
   <div class="timeline">
-    <div class="timeline-title">Progression — 0 à 24 mois</div>
+    <div class="timeline-title">Progression — 0 a 24 mois (age corrige)</div>
     <div class="timeline-bar">
       <div class="timeline-fill" id="timelineFill"></div>
       <div class="timeline-marker" id="timelineMarker"></div>
     </div>
     <div class="timeline-labels">
       <span>Naissance</span>
-      <span id="timelineLabel">6 mois</span>
+      <span id="timelineLabel">—</span>
       <span>24 mois</span>
     </div>
   </div>
 
-  <!-- Q&A -->
-  <div class="question-box">
-    <input class="question-input" id="questionInput" type="text" placeholder="Une question sur Élise cette semaine..." />
-    <button class="question-btn" onclick="askQuestion()">Demander →</button>
+  <div class="ask-claude">
+    Une question sur Elise ? <a href="https://claude.ai" target="_blank">Pose-la directement a Claude</a><br>
+    <span style="font-size:11px;">Mentionne son age corrige et sa situation (prematuree, lait en poudre, diversification en cours).</span>
   </div>
-  <div class="chat-thread" id="chatThread"></div>
 
 </div>
 
 <script>
-  // --- Config ---
-  const BEBE = {
-    nom: "Élise",
-    dateNaissance: new Date("2025-11-02"),  // naissance réelle (prématurée)
-    dateTherme: new Date("2025-12-09"),     // date terme originale
-    lait: "lait maternisé en poudre (pas de lait maternel suite à la prématurité)",
-    diversification: true,
-    contexteAlim: "La diversification alimentaire est déjà commencée. Ne pas culpabiliser les parents. Adapter les conseils à cette réalité."
-  };
+var DATE_NAISSANCE = new Date("2025-11-02");
+var DATE_TERME     = new Date("2025-12-09");
 
-  const SOURCES = "CDC Milestone Tracker, UNICEF Parenting, Naître et Grandir, méthode Montessori";
-
-  // --- Age calc ---
-  // Pour les prématurés, on utilise l'âge CORRIGÉ (calculé depuis la date terme)
-  // pour les recommandations de développement, comme conseillé par les pédiatres.
-  function getAgeDetails() {
-    const now = new Date();
-
-    // Âge chronologique (depuis la naissance réelle)
-    const diffReel = now - BEBE.dateNaissance;
-    const joursReel = Math.floor(diffReel / (1000*60*60*24));
-    const moisReel = Math.floor(joursReel / 30.44);
-
-    // Âge corrigé (depuis la date terme)
-    const diffCorrige = now - BEBE.dateTherme;
-    const joursCorrige = Math.floor(diffCorrige / (1000*60*60*24));
-    const moisCorrige = Math.max(0, Math.floor(joursCorrige / 30.44));
-    const semaineCorrigee = Math.max(1, Math.ceil((joursCorrige % 30.44) / 7));
-
-    // Prématurité en semaines
-    const diffPrematurite = BEBE.dateTherme - BEBE.dateNaissance;
-    const semainesPrematurite = Math.round(diffPrematurite / (1000*60*60*24*7));
-
-    return {
-      mois: moisCorrige,          // âge corrigé → pour les conseils
-      moisReel,                   // âge chronologique → pour l'affichage
-      semaine: semaineCorrigee,
-      semainesPrematurite,
-      joursReel
-    };
+var DATA = {
+  0: {
+    brief: "A l'age corrige de la naissance, Elise decouvre le monde exterieur. Son systeme nerveux est encore en pleine maturation : elle a besoin de calme, de chaleur et de contact. Le lait maternise adapte aux prematures couvre tous ses besoins nutritionnels. Cote eveil Montessori, le visage humain est deja son jouet prefere : parlez-lui doucement a 20-30 cm de distance.",
+    dev: { titre: "Reflexes et premiers sens", contenu: "Elise reagit aux sons, suit brievement un visage des yeux et saisit le doigt par reflexe. Son tonus musculaire se renforce progressivement.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Lait maternise exclusif", contenu: "Le lait en poudre 1er age special premature couvre tous ses besoins. Respecter les quantites prescrites par le pediatre. Pas de diversification avant 4 mois corrige.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Le visage, premier jouet", contenu: "Placez votre visage a 20-30 cm du sien et parlez doucement. C'est la stimulation Montessori la plus adaptee a ce stade : simple, naturelle et puissante.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  1: {
+    brief: "A 1 mois corrige, Elise commence a sourire de facon plus intentionnelle et suit les visages du regard. C'est une periode de connexion intense. Le lait maternise reste sa seule source de nutrition. En eveil Montessori, introduisez un mobile en noir et blanc au-dessus de son espace de jeu : son systeme visuel est particulierement stimule par les contrastes forts.",
+    dev: { titre: "Sourire et regard social", contenu: "Le premier sourire social apparait. Elise fixe les visages plus longtemps et commence a vocaliser de petits sons. Son cou se renforce doucement.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Rythme et quantites stables", contenu: "Le lait maternise reste exclusif. A cet age corrige, 6 a 8 biberons par jour est normal. Laisser Elise guider les quantites — elle sait s'arreter quand elle est rasassiee.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Mobile noir et blanc", contenu: "Suspendez un mobile contraste (noir, blanc, rouge) a 30 cm au-dessus d'elle. Les formes geometriques simples stimulent la vision sans surcharger. 5-10 minutes suffisent.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  2: {
+    brief: "A 2 mois corrigesd, Elise est plus eveilee et interactive. Elle peut tenir sa tete quelques secondes en position ventrale et reagit clairement a votre voix. C'est le bon moment pour introduire le temps sur le ventre quotidiennement. Le lait maternise reste exclusif. En Montessori, nommer les objets et les actions du quotidien a voix haute est une activite d'eveil precieuse.",
+    dev: { titre: "Tete et interactions vocales", contenu: "Elise tient sa tete quelques secondes sur le ventre. Elle gazouille et repond a votre voix. Le sourire social est bien installe.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Lait maternise, sans stress", contenu: "6 biberons par jour environ. La prise de poids est le meilleur indicateur — suivez les courbes avec votre pediatre. Pas de cereales dans le biberon.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Nommer le monde a voix haute", contenu: "Pendant le change, le bain, les repas : nommez tout ce que vous faites. 'Je te mets ta grenouillere bleue.' Ce bain de langage Montessori construit le vocabulaire passif.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  3: {
+    brief: "A 3 mois corrigesd, Elise entre dans une phase tres sociale. Elle rit aux eclats, suit les objets des yeux sur 180 degres et commence a attraper ce qu'on lui tend. Le temps sur le ventre se renforce — visez 20-30 minutes reparties dans la journee. La diversification alimentaire n'est pas encore recommandee : attendez 4 a 6 semaines et le feu vert de votre pediatre.",
+    dev: { titre: "Rires et prehension active", contenu: "Elise rit aux eclats et suit les objets du regard a 180 degres. Elle tend les mains vers les objets et commence a les attraper. Le controle de la tete est quasi acquis.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Pas encore de diversification", contenu: "A 3 mois corrigesd, le tube digestif n'est pas pret. Le lait maternise 1er age reste la base exclusive. La diversification se prepare pour 4-6 mois corrigesd, avec l'accord du pediatre.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Hochets legers a saisir", contenu: "Proposez un hochet leger qu'elle peut attraper seule. Laissez-la explorer sans guider sa main — en Montessori, l'exploration autonome prime. Observez sans intervenir.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  4: {
+    brief: "A 4 mois corrigesd, c'est le moment de consolider la diversification alimentaire si votre pediatre l'a valide — et c'est deja votre cas ! Commencez par des legumes cuits mixes tres lisses : carotte, courgette, patate douce. Introduisez un seul legume a la fois, 3 jours de suite, pour reperer d'eventuelles reactions. Cote developpement, Elise commence a se retourner et a vouloir explorer l'espace.",
+    dev: { titre: "Se retourner et explorer", contenu: "Elise peut se retourner du dos au ventre. Elle explore ses mains avec fascination et porte tout a la bouche — c'est normal et necessaire. La coordination oeil-main se precise.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Premiers legumes mixes", contenu: "Carotte, courgette, patate douce cuits et mixes tres finement. 2-3 cuilleres pour commencer, en complement du lait. Un legume a la fois, 3 jours d'affilee avant d'en introduire un nouveau.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Espace au sol et liberte", contenu: "Installez Elise sur un tapis ferme au sol, sans la caler. En Montessori, la liberte de mouvement est fondamentale : laissez-la se retourner, s'etirer, explorer sans l'asseoir de force.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  5: {
+    brief: "A 5 mois corrigesd, la diversification s'enrichit. Vous pouvez ajouter les fruits (pomme, poire, banane bien mure) et commencer a varier les legumes. Elise est probablement assise avec soutien et adore interagir. Le lait maternise reste important — 500 a 600 ml par jour minimum. En Montessori, les jeux de miroir sont tres stimulants a cet age.",
+    dev: { titre: "Assis avec soutien", contenu: "Elise tient assise avec un appui dans le dos. Elle passe les objets d'une main a l'autre et reagit a son prenom. Le babillage se developpe : 'ba', 'ma', 'da'.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Fruits et variete legumes", contenu: "Introduisez les compotes de fruits (pomme, poire, banane) sans sucre ajoute. Continuez a varier les legumes. 1 repas de solides par jour bien etabli, lait maternise en base.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Jeux de miroir", contenu: "Placez un miroir incassable a sa portee au sol. Elle va observer son reflet avec fascination. Montessori recommande le miroir des les premiers mois — c'est un outil d'eveil puissant et simple.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  6: {
+    brief: "A 6 mois corrigesd, Elise est en plein developpement ! Elle peut tenir assise seule quelques secondes et commence a vouloir se deplacer. La diversification s'enrichit avec les proteines : poulet, dinde mixes finement. Le lait maternise reste a 500 ml/jour minimum. En Montessori, c'est l'age des jeux de cause a effet : elle adore decouvrir qu'elle a du pouvoir sur son environnement.",
+    dev: { titre: "Tient assis, veut bouger", contenu: "Elise tient assise seule quelques secondes. Elle cherche a se deplacer et se met en position de ramping. La permanence de l'objet commence : elle cherche un jouet qui tombe.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Introduction des proteines", contenu: "Ajoutez la volaille (poulet, dinde) mixee finement : 10g pour commencer. 2 repas de solides par jour. Le lait maternise reste a 500 ml/jour minimum en parallele.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Jeux de cause a effet", contenu: "Proposez des jouets simples ou une action produit un resultat (balle qui roule, objet qui fait du bruit). Laissez-la decouvrir seule le mecanisme — la satisfaction d'y arriver par elle-meme est essentielle en Montessori.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  7: {
+    brief: "A 7 mois corrigesd, la motricite progresse vite. Elise rampe ou se deplace a 4 pattes et veut explorer tout l'espace. Securisez l'environnement : c'est une priorite. La diversification s'enrichit avec le poisson blanc (2 fois par semaine) et les textures legerement moins lisses. En Montessori, les paniers sensoriels avec des objets du quotidien aux textures variees sont parfaits a cet age.",
+    dev: { titre: "Ramping et 4 pattes", contenu: "Elise rampe ou se deplace a 4 pattes. Elle se met debout en tenant les meubles. L'angoisse de separation apparait — c'est un signe d'attachement sain.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Poisson blanc et textures", contenu: "Introduisez le poisson blanc (cabillaud, sole) 2x par semaine, 10-15g. Les textures peuvent etre legerement moins lisses. 2-3 repas de solides, lait maternise 500 ml/jour.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Panier sensoriel Montessori", contenu: "Remplissez un petit panier d'objets aux textures differentes : balle en laine, cuillere en bois, tissu soyeux, brosse douce. Laissez Elise explorer librement sous votre regard.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  8: {
+    brief: "A 8 mois corrigesd, Elise devient de plus en plus autonome. Elle se leve en tenant les meubles et marche en crusing. Le vocabulaire passif s'enrichit — elle comprend des mots simples. Cote alimentation, vous pouvez introduire les oeufs bien cuits et les legumineuses (lentilles corail). En Montessori, les jeux d'emboitement et d'empilage developpent la coordination et la logique.",
+    dev: { titre: "Debout et premiers pas lateraux", contenu: "Elise se leve en se tenant aux meubles et marche lateralement. Elle dit 'mama' et 'dada' avec sens. Elle pointe du doigt les objets qui l'interessent.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Oeufs et legumineuses", contenu: "Introduisez l'oeuf entier bien cuit. Ajoutez les lentilles corail bien cuites. Les finger foods mous apparaissent : morceaux de banane, carotte tres cuite.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Emboitement et empilage", contenu: "Les cubes a empiler, les boites a ouvrir et fermer, les anneaux a empiler sont ideaux. En Montessori, ces activites developpent la logique spatiale et la perseverance.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  9: {
+    brief: "A 9 mois corrigesd, les premiers pas arrivent peut-etre — ou pas encore, et c'est tout aussi normal. Chaque bebe a son rythme. Elise comprend environ 20 a 50 mots meme si elle n'en dit que 1 a 3. La table familiale adaptee devient la norme. En Montessori, nommer les emotions d'Elise a voix haute l'aide a developper son intelligence emotionnelle.",
+    dev: { titre: "Premiers mots et marche proche", contenu: "Elise dit 1 a 3 mots avec sens. Elle marche peut-etre seule ou avec soutien leger. Elle imite les gestes (applaudir, faire au revoir).", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Quasi alimentation familiale", contenu: "Textures molles et fondantes proches du repas familial. Evitez encore les noix entieres, le miel, les raisins entiers. Le lait maternise peut passer a 500 ml/jour si les repas sont equilibres.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Nommer les emotions", contenu: "Quand Elise pleure ou rit, nommez ce qu'elle ressent : 'Tu es contente !', 'Tu es fatiguee, hein ?' Valider les emotions avant de poser une limite construit la securite affective.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  10: {
+    brief: "A 10 mois corrigesd, Elise est une exploratrice. Elle marche probablement seule ou avec tres peu de soutien. Son vocabulaire actif s'enrichit. Les repas sont quasi familiaux — continuez a manger ensemble, c'est le meilleur apprentissage alimentaire. En Montessori, les activites de tri et de rangement sont tres adaptees et captivantes a cet age.",
+    dev: { titre: "Marche et langage actif", contenu: "Elise marche seule ou avec peu de soutien. Elle dit plusieurs mots avec sens et commence a associer deux mots. Elle montre ce qu'elle veut du doigt.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Repas en famille, vraiment", contenu: "Manger ensemble a table est le meilleur outil d'education alimentaire : Elise imite ce qu'elle voit. Proposez les memes aliments que vous, adaptes en texture et sans assaisonnement fort.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Trier et ranger ensemble", contenu: "Invitez Elise a ranger ses jouets avec vous. Mettre des balles dans un panier, empiler des anneaux, trier par couleur — ces activites developpent la concentration et l'ordre interne.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  11: {
+    brief: "A 11 mois corrigesd, Elise approche de son premier anniversaire corrige. Elle est tres curieuse, adore imiter les adultes et montre une vraie personnalite. Si vous envisagez le passage au lait de croissance, parlez-en a votre pediatre. En Montessori, les jeux de faire semblant tres simples apparaissent et c'est fascinant a observer.",
+    dev: { titre: "Imitation et personnalite", contenu: "Elise imite les gestes des adultes avec precision. Elle joue a faire semblant et montre de l'empathie. Les coleres apparaissent — c'est signe de conscience de soi.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Transition vers 12 mois", contenu: "Alimentation quasi identique aux adultes (adaptee). Discutez avec votre pediatre du passage au lait de croissance. Encouragez l'autonomie a table : cuillere, verre a bec.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Jeux de faire semblant", contenu: "Proposez une petite dinette, une poupee, des accessoires du quotidien. Le jeu symbolique commence : Elise rejoue ce qu'elle observe. Participez brievement puis laissez-la diriger.", tag: "A tester", tagClass: "tag-amber" }
+  },
+  12: {
+    brief: "Un an d'age corrige pour Elise — bravo a vous ! Elle marche, commence a courir, dit plusieurs mots et comprend des phrases courtes. L'alimentation est familiale et variee. C'est l'age des grandes explorations : les activites en exterieur (sable, nature, eau) sont ideales en Montessori. Elle entre dans la periode de l'enfant chercheur — chaque objet est une experience.",
+    dev: { titre: "Marche, mots et grande curiosite", contenu: "Elise marche bien et commence a courir. Elle dit 5 a 10 mots, pointe beaucoup, comprend des consignes simples. Elle entre dans la periode sensible de l'ordre.", tag: "Etape cle", tagClass: "tag-sage" },
+    alim: { titre: "Alimentation familiale complete", contenu: "Tous les aliments sont possibles sauf le miel cru, les noix entieres et l'alcool. Le lait de croissance ou lait entier prend le relais du lait maternise. 3 repas + 1-2 collations.", tag: "Cette semaine", tagClass: "tag-terra" },
+    eveil: { titre: "Exterieur et exploration nature", contenu: "Sable, eau, herbe, feuilles, cailloux — la nature est le meilleur materiel Montessori. Laissez Elise toucher, sentir, porter. L'exploration sensorielle en exterieur est fondamentale a cet age.", tag: "A tester", tagClass: "tag-amber" }
   }
+};
 
-  function initHeader() {
-    const { mois, moisReel, semaine, semainesPrematurite } = getAgeDetails();
-    const now = new Date();
-    document.getElementById('headerAge').textContent =
-      `${moisReel} mois réels · ${mois} mois corrigé · Semaine ${semaine}`;
-    document.getElementById('headerDate').innerHTML =
-      now.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }) +
-      `<br><span style="font-size:11px;color:var(--sage-dark);">Née à ${semainesPrematurite} sem. avant terme</span>`;
+function getAgeCorrige() {
+  var now = new Date();
+  var diffMs = now - DATE_TERME;
+  var jours = Math.floor(diffMs / (1000*60*60*24));
+  return Math.max(0, Math.floor(jours / 30.44));
+}
 
-    // Timeline basée sur l'âge corrigé
-    const pct = Math.min((mois / 24) * 100, 100);
-    document.getElementById('timelineFill').style.width = pct + '%';
-    document.getElementById('timelineMarker').style.left = pct + '%';
-    document.getElementById('timelineLabel').textContent = `${mois} mois corrigé`;
-  }
+function getAgeReel() {
+  var now = new Date();
+  var diffMs = now - DATE_NAISSANCE;
+  return Math.floor(diffMs / (1000*60*60*24*30.44));
+}
 
-  // --- Claude API call ---
-  async function callClaude(prompt, systemPrompt) {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: systemPrompt || "Tu es un expert en développement du nourrisson. Réponds en français, de façon chaleureuse et précise.",
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-    const data = await res.json();
-    return data.content?.[0]?.text || "Erreur de réponse.";
-  }
+function getSemainesPrematurite() {
+  var diffMs = DATE_TERME - DATE_NAISSANCE;
+  return Math.round(diffMs / (1000*60*60*24*7));
+}
 
-  // --- Brief ---
-  async function loadBrief() {
-    const { mois, semaine } = getAgeDetails();
-    document.getElementById('briefContent').innerHTML = `<div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+var AGE_CORRIGE_ACTUEL = Math.min(getAgeCorrige(), 12);
+var ageAffiche = AGE_CORRIGE_ACTUEL;
 
-    const { moisReel, semainesPrematurite } = getAgeDetails();
-    const contexteAlim = `Alimentation : lait maternisé en poudre (lait maternel non maintenu suite à la prématurité) + diversification déjà commencée. Ne jamais culpabiliser les parents sur ces choix.`;
-    const prompt = `Élise est née prématurément, ${semainesPrematurite} semaines avant terme (née le 2 novembre 2025, terme prévu le 9 décembre 2025). Elle a ${moisReel} mois d'âge réel et ${mois} mois d'âge corrigé (semaine ${semaine}). ${contexteAlim}
+function render() {
+  var data = DATA[ageAffiche];
+  if (!data) return;
 
-Conseils basés sur l'âge CORRIGÉ de ${mois} mois. En te basant sur le CDC Milestone Tracker, l'UNICEF Parenting, Naître et Grandir, et Montessori, rédige un brief hebdomadaire concis (5-7 phrases max).
+  document.getElementById('monthLabel').textContent =
+    ageAffiche === AGE_CORRIGE_ACTUEL
+      ? ageAffiche + " mois corrige — maintenant"
+      : ageAffiche + " mois corrige";
 
-Couvre : 1 point développement à ${mois} mois corrigé, 1 conseil pratique sur la diversification en cours (quoi introduire, textures, quantités), 1 activité d'éveil Montessori. Ton chaleureux, bienveillant, sans jugement.`;
+  document.getElementById('btnPrev').disabled = ageAffiche <= 0;
+  document.getElementById('btnNext').disabled = ageAffiche >= 12;
 
-    const text = await callClaude(prompt);
-    document.getElementById('briefContent').innerHTML = `<span class="fade-in">${text.replace(/\n/g,'<br>')}</span>`;
-  }
+  var briefEl = document.getElementById('briefText');
+  briefEl.textContent = data.brief;
+  briefEl.classList.remove('fade-in');
+  void briefEl.offsetWidth;
+  briefEl.classList.add('fade-in');
 
-  // --- Domain cards ---
-  async function loadDomains() {
-    const { mois } = getAgeDetails();
+  document.getElementById('domainsGrid').innerHTML =
+    '<div class="domain-card">' +
+      '<span class="domain-icon">🌱</span>' +
+      '<div class="domain-label">Developpement</div>' +
+      '<div class="domain-title">' + data.dev.titre + '</div>' +
+      '<div class="domain-content">' + data.dev.contenu + '</div>' +
+      '<span class="domain-tag ' + data.dev.tagClass + '">' + data.dev.tag + '</span>' +
+    '</div>' +
+    '<div class="domain-card">' +
+      '<span class="domain-icon">🍎</span>' +
+      '<div class="domain-label">Alimentation</div>' +
+      '<div class="domain-title">' + data.alim.titre + '</div>' +
+      '<div class="domain-content">' + data.alim.contenu + '</div>' +
+      '<span class="domain-tag ' + data.alim.tagClass + '">' + data.alim.tag + '</span>' +
+    '</div>' +
+    '<div class="domain-card">' +
+      '<span class="domain-icon">✨</span>' +
+      '<div class="domain-label">Eveil et Montessori</div>' +
+      '<div class="domain-title">' + data.eveil.titre + '</div>' +
+      '<div class="domain-content">' + data.eveil.contenu + '</div>' +
+      '<span class="domain-tag ' + data.eveil.tagClass + '">' + data.eveil.tag + '</span>' +
+    '</div>';
 
-    const { moisReel, semainesPrematurite } = getAgeDetails();
-    const contexte = `Élise est prématurée (${semainesPrematurite} sem. avant terme), âge réel ${moisReel} mois, âge corrigé ${mois} mois. Utilise l'âge corrigé. Elle est au lait maternisé en poudre et la diversification alimentaire est déjà commencée — adapter les conseils alimentation en conséquence, sans jugement.`;
+  var pct = Math.min((ageAffiche / 24) * 100, 100);
+  document.getElementById('timelineFill').style.width = pct + '%';
+  document.getElementById('timelineMarker').style.left = pct + '%';
+  document.getElementById('timelineLabel').textContent = ageAffiche + ' mois corrige';
+}
 
-    const domains = [
-      {
-        key: 'dev',
-        prompt: `${contexte} Pour un bébé de ${mois} mois d'âge corrigé, donne : un titre court (5 mots max) pour l'étape de développement de la semaine, puis une description courte (2-3 phrases). Format JSON strict : {"titre":"...","contenu":"..."}`
-      },
-      {
-        key: 'alim',
-        prompt: `${contexte} Pour un bébé de ${mois} mois d'âge corrigé nourri au lait en poudre avec diversification déjà commencée, donne : un titre court (5 mots max) sur le focus alimentation/diversification de la semaine, puis une description concrète (2-3 phrases : quoi introduire, comment, quelle texture). Format JSON strict : {"titre":"...","contenu":"..."}`
-      },
-      {
-        key: 'eveil',
-        prompt: `${contexte} Pour un bébé de ${mois} mois d'âge corrigé selon la pédagogie Montessori, donne : un titre court (5 mots max) pour l'activité d'éveil de la semaine, puis une description courte (2-3 phrases). Format JSON strict : {"titre":"...","contenu":"..."}`
-      }
-    ];
+function changeMonth(delta) {
+  ageAffiche = Math.max(0, Math.min(12, ageAffiche + delta));
+  render();
+}
 
-    for (const d of domains) {
-      try {
-        const raw = await callClaude(d.prompt, "Réponds UNIQUEMENT en JSON valide, sans texte autour, sans backticks.");
-        const json = JSON.parse(raw.replace(/```json|```/g,'').trim());
-        document.getElementById(d.key + '-title').textContent = json.titre;
-        document.getElementById(d.key + '-content').textContent = json.contenu;
-      } catch(e) {
-        document.getElementById(d.key + '-title').textContent = "—";
-        document.getElementById(d.key + '-content').textContent = "Erreur de chargement.";
-      }
-    }
-  }
+function initHeader() {
+  var ageReel = getAgeReel();
+  var ageCorrige = getAgeCorrige();
+  var semPrem = getSemainesPrematurite();
+  var now = new Date();
+  document.getElementById('headerAge').textContent =
+    ageReel + ' mois reels / ' + ageCorrige + ' mois corrige';
+  document.getElementById('headerRight').innerHTML =
+    now.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' }) +
+    '<br>' + semPrem + ' sem. prematuree';
+}
 
-  // --- Q&A ---
-  function askDomain(domaine) {
-    document.getElementById('questionInput').value = `Dis-m'en plus sur le ${domaine} d'Élise cette semaine.`;
-    document.getElementById('questionInput').focus();
-  }
-
-  async function askQuestion() {
-    const input = document.getElementById('questionInput');
-    const q = input.value.trim();
-    if (!q) return;
-
-    const { mois, semaine } = getAgeDetails();
-    input.value = '';
-
-    const thread = document.getElementById('chatThread');
-
-    const userBubble = document.createElement('div');
-    userBubble.className = 'chat-bubble user fade-in';
-    userBubble.textContent = q;
-    thread.appendChild(userBubble);
-
-    const aiBubble = document.createElement('div');
-    aiBubble.className = 'chat-bubble ai fade-in';
-    aiBubble.innerHTML = `<div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-    thread.appendChild(aiBubble);
-    thread.scrollIntoView({ behavior: 'smooth', block: 'end' });
-
-    const { moisReel, semainesPrematurite } = getAgeDetails();
-    const prompt = `Élise est prématurée (${semainesPrematurite} semaines avant terme). Âge réel : ${moisReel} mois. Âge corrigé : ${mois} mois (semaine ${semaine}). Elle est nourrie au lait maternisé en poudre (pas de lait maternel suite à la prématurité) et la diversification alimentaire est déjà commencée. Toujours utiliser l'âge corrigé pour les recommandations. Ne jamais culpabiliser les parents sur leurs choix alimentaires.
-
-Question du parent : "${q}". Réponds de façon chaleureuse, concrète et rassurante en 3-5 phrases. Base-toi sur le CDC, l'UNICEF, Naître et Grandir, et Montessori.`;
-
-    const answer = await callClaude(prompt);
-    aiBubble.innerHTML = answer.replace(/\n/g,'<br>');
-    thread.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }
-
-  document.getElementById('questionInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') askQuestion();
-  });
-
-  // --- Init ---
-  initHeader();
-  loadBrief();
-  loadDomains();
+initHeader();
+render();
 </script>
 </body>
 </html>
