@@ -22,7 +22,7 @@
   .header-age { font-size:12px; color:var(--muted); margin-top:2px; }
   .header-right { text-align:right; font-size:11px; color:var(--muted); line-height:1.5; }
 
-  .tabs { display:flex; border-bottom:1px solid var(--border); background:var(--warm-white); padding:0 1.5rem; }
+  .tabs { display:flex; border-bottom:1px solid var(--border); background:var(--warm-white); padding:0 1.5rem; overflow-x:auto; }
   .tab { padding:.85rem 1.25rem; font-size:13px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; }
   .tab.active { color:var(--sage-dark); border-bottom-color:var(--sage); font-weight:500; }
   .tab:hover:not(.active) { color:var(--charcoal); }
@@ -110,6 +110,20 @@
   .gen-btn:hover { background:#EDF5EE; border-color:var(--sage-light); }
   .gen-btn:disabled { opacity:0.5; cursor:default; }
 
+  /* COURSES */
+  .courses-card { background:var(--warm-white); border:1px solid var(--border); border-radius:14px; padding:1.25rem; margin-bottom:1.25rem; }
+  .courses-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap; gap:8px; }
+  .courses-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:400; }
+  .courses-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; }
+  .courses-cat { }
+  .courses-cat-title { font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid var(--border); }
+  .course-item { display:flex; align-items:center; gap:8px; padding:5px 0; font-size:13px; color:var(--charcoal); cursor:pointer; }
+  .course-check { width:16px; height:16px; border-radius:4px; border:1.5px solid var(--sage-light); flex-shrink:0; transition:all .15s; display:flex; align-items:center; justify-content:center; }
+  .course-item.checked .course-check { background:var(--sage); border-color:var(--sage); }
+  .course-item.checked .course-check::after { content:'✓'; color:white; font-size:10px; }
+  .course-item.checked .course-text { text-decoration:line-through; color:var(--muted); }
+  .courses-note { font-size:12px; color:var(--muted); margin-top:1rem; font-style:italic; }
+
   @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
   .fade-in { animation:fadeIn .3s ease forwards; }
 </style>
@@ -130,6 +144,7 @@
 <div class="tabs">
   <div class="tab active" onclick="showTab('suivi', this)">Suivi</div>
   <div class="tab" onclick="showTab('menu', this)">Menu de la semaine</div>
+  <div class="tab" onclick="showTab('courses', this)">Liste de courses</div>
 </div>
 
 <!-- TAB SUIVI -->
@@ -209,10 +224,23 @@
       <div class="pills"><span class="pill">4 repas</span><span class="pill">Midi + Gouter</span><span class="pill">Allergenes indiques</span></div>
     </div>
     <div class="brief-text" id="menuIntro"><div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-    <button class="refresh-btn" onclick="loadMenu()">Regenerer tout le menu</button>
+    <button class="refresh-btn" onclick="reloadMenu()">Regenerer tout le menu</button>
   </div>
   <div class="menu-grid" id="menuGrid">
     <div style="grid-column:1/-1;padding:1rem;text-align:center;"><div class="loading-dots" style="justify-content:center"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- TAB COURSES -->
+<div class="tab-content" id="tab-courses">
+<div class="main">
+  <div class="courses-card">
+    <div class="courses-header">
+      <div class="courses-title">Liste de courses</div>
+      <button class="refresh-btn" style="margin-top:0" onclick="loadCourses()">Actualiser</button>
+    </div>
+    <div id="coursesContent"><div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
   </div>
 </div>
 </div>
@@ -221,6 +249,8 @@
 var DATE_NAISSANCE = new Date("2025-11-02");
 var DATE_TERME     = new Date("2025-12-09");
 var menuLoaded = false;
+var coursesLoaded = false;
+var allIngredients = [];
 
 function getAgeDetails() {
   var now = new Date();
@@ -245,7 +275,7 @@ function initHeader() {
 
 function contexte() {
   var a = getAgeDetails();
-  return 'Elise est prematuree (' + a.semPrem + ' sem. avant terme). Age reel : ' + a.moisReel + ' mois. Age corrige : ' + a.mois + ' mois (semaine ' + a.semaine + '). Elle est nourrie au lait maternise en poudre et mange actuellement des legumes mixes. Diversification en cours. Utilise l\'age corrige. Ton chaleureux, sans jugement.';
+  return 'Elise est prematuree (' + a.semPrem + ' sem. avant terme). Age reel : ' + a.moisReel + ' mois. Age corrige : ' + a.mois + ' mois (semaine ' + a.semaine + '). Elle est nourrie au lait maternise en poudre et mange uniquement des legumes mixes. Diversification en cours. Utilise l\'age corrige. Ton chaleureux, sans jugement.';
 }
 
 function dots() { return '<div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>'; }
@@ -256,6 +286,7 @@ function showTab(tab, el) {
   el.classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
   if (tab === 'menu' && !menuLoaded) { loadMenu(); menuLoaded = true; }
+  if (tab === 'courses') { loadCourses(); }
 }
 
 async function callAPI(prompt, system) {
@@ -310,7 +341,7 @@ function buildRepasPrompt(jour, type, extra) {
     'Elle mange uniquement des legumes mixes pour l\'instant. ' +
     (extra ? 'Genere une recette DIFFERENTE de : ' + extra + '. ' : '') +
     'Reponds UNIQUEMENT en JSON valide sans backticks : ' +
-    '{"nom":"...","ingredients":"liste des ingredients avec quantites","preparation":"etapes courtes de preparation","quantite":"quantite totale pour bebe","allergenes":["liste","des","allergenes","presents","ou vide si aucun"]}';
+    '{"nom":"...","ingredients":"liste des ingredients avec quantites","preparation":"etapes courtes","quantite":"quantite totale pour bebe","allergenes":["liste allergenes ou tableau vide si aucun"]}';
 }
 
 function renderRepasCard(r, jour, type, cardId) {
@@ -339,7 +370,7 @@ function renderRepasCard(r, jour, type, cardId) {
       '<span class="repas-quantite">' + r.quantite + '</span>' +
     '</div>' +
     '<div class="repas-footer">' +
-      '<button class="gen-btn" onclick="regenererRepas(\'' + cardId + '\',\'' + jour + '\',\'' + type + '\',\'' + r.nom + '\')" >↺ Autre recette</button>' +
+      '<button class="gen-btn" onclick="regenererRepas(\'' + cardId + '\',\'' + jour + '\',\'' + type + '\',\'' + r.nom.replace(/'/g,"\\'") + '\')">↺ Autre recette</button>' +
     '</div>' +
   '</div>';
 }
@@ -347,39 +378,55 @@ function renderRepasCard(r, jour, type, cardId) {
 async function regenererRepas(cardId, jour, type, nomActuel) {
   var card = document.getElementById(cardId);
   var btn = card.querySelector('.gen-btn');
-  btn.disabled = true;
-  btn.textContent = '...';
+  btn.disabled = true; btn.textContent = '...';
   card.querySelector('.repas-body').innerHTML = dots();
   try {
     var raw = await callAPI(buildRepasPrompt(jour, type, nomActuel), 'Reponds UNIQUEMENT en JSON valide sans backticks.');
     var r = JSON.parse(raw.replace(/```json|```/g,'').trim());
-    card.outerHTML = renderRepasCard(r, jour, type, cardId);
-  } catch(e) {
-    btn.disabled = false;
-    btn.textContent = '↺ Autre recette';
-  }
+    var el = document.getElementById(cardId);
+    if (el) {
+      el.outerHTML = renderRepasCard(r, jour, type, cardId);
+      updateIngredients();
+    }
+  } catch(e) { btn.disabled = false; btn.textContent = '↺ Autre recette'; }
+}
+
+function updateIngredients() {
+  allIngredients = [];
+  document.querySelectorAll('.repas-val').forEach(function(el, i) {
+    if (i % 2 === 0) {
+      var txt = el.textContent.trim();
+      if (txt) allIngredients.push(txt);
+    }
+  });
+}
+
+async function reloadMenu() {
+  menuLoaded = false;
+  coursesLoaded = false;
+  allIngredients = [];
+  loadMenu();
+  menuLoaded = true;
 }
 
 async function loadMenu() {
   var a = getAgeDetails();
   document.getElementById('menuIntro').innerHTML = dots();
   document.getElementById('menuGrid').innerHTML = '<div style="grid-column:1/-1;padding:1rem;text-align:center;">' + dots() + '</div>';
+  allIngredients = [];
 
   var introText = await callAPI(contexte() + ' En 2 phrases, presente le menu de diversification de la semaine pour Elise a ' + a.mois + ' mois corrige qui mange des legumes mixes.');
   document.getElementById('menuIntro').innerHTML = '<span class="fade-in">' + introText + '</span>';
 
   var jours = [
-    {jour:'Lundi', type:'Midi'},
-    {jour:'Lundi', type:'Gouter'},
-    {jour:'Mardi', type:'Midi'},
-    {jour:'Mardi', type:'Gouter'},
-    {jour:'Mercredi', type:'Midi'},
-    {jour:'Mercredi', type:'Gouter'},
-    {jour:'Jeudi', type:'Midi'},
-    {jour:'Jeudi', type:'Gouter'}
+    {jour:'Lundi',type:'Midi'},{jour:'Lundi',type:'Gouter'},
+    {jour:'Mardi',type:'Midi'},{jour:'Mardi',type:'Gouter'},
+    {jour:'Mercredi',type:'Midi'},{jour:'Mercredi',type:'Gouter'},
+    {jour:'Jeudi',type:'Midi'},{jour:'Jeudi',type:'Gouter'}
   ];
 
   document.getElementById('menuGrid').innerHTML = '';
+  var promises = [];
 
   for (var i = 0; i < jours.length; i++) {
     var j = jours[i];
@@ -390,16 +437,70 @@ async function loadMenu() {
     placeholder.innerHTML = '<div class="repas-header"><span style="font-size:16px">' + (j.type==='Midi'?'🍲':'🍎') + '</span><div class="repas-jour">' + j.jour + '</div><span class="repas-type ' + (j.type==='Midi'?'type-midi':'type-gouter') + '">' + j.type + '</span></div><div class="repas-body">' + dots() + '</div>';
     document.getElementById('menuGrid').appendChild(placeholder);
 
-    (function(jour, type, cid) {
-      callAPI(buildRepasPrompt(jour, type, ''), 'Reponds UNIQUEMENT en JSON valide sans backticks.').then(function(raw) {
+    promises.push((function(jour, type, cid) {
+      return callAPI(buildRepasPrompt(jour, type, ''), 'Reponds UNIQUEMENT en JSON valide sans backticks.').then(function(raw) {
         try {
           var r = JSON.parse(raw.replace(/```json|```/g,'').trim());
           var el = document.getElementById(cid);
-          if (el) el.outerHTML = renderRepasCard(r, jour, type, cid);
+          if (el) {
+            el.outerHTML = renderRepasCard(r, jour, type, cid);
+            allIngredients.push(r.ingredients);
+          }
         } catch(e) {}
       });
-    })(j.jour, j.type, cardId);
+    })(j.jour, j.type, cardId));
   }
+
+  await Promise.all(promises);
+}
+
+async function loadCourses() {
+  document.getElementById('coursesContent').innerHTML = dots();
+
+  if (allIngredients.length === 0) {
+    document.getElementById('coursesContent').innerHTML =
+      '<p style="font-size:13px;color:var(--muted);">Consultez d\'abord l\'onglet "Menu de la semaine" pour generer les recettes, puis revenez ici.</p>';
+    return;
+  }
+
+  var prompt = 'Voici la liste des ingredients des repas de la semaine pour un bebe en diversification : ' +
+    allIngredients.join(' / ') +
+    '. Consolide tous ces ingredients en une liste de courses organisee par categorie (Legumes, Fruits, Proteines, Epicerie, Autre). ' +
+    'Regroupe les doublons et indique les quantites totales. ' +
+    'Reponds UNIQUEMENT en JSON valide sans backticks : ' +
+    '{"categories":[{"nom":"Legumes","items":["..."]},{"nom":"Fruits","items":["..."]},{"nom":"Proteines","items":["..."]},{"nom":"Epicerie","items":["..."]},{"nom":"Autre","items":["..."]}]}';
+
+  try {
+    var raw = await callAPI(prompt, 'Tu es un assistant cuisine. Reponds UNIQUEMENT en JSON valide sans backticks.');
+    var json = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    var html = '<div class="courses-grid">';
+    json.categories.forEach(function(cat) {
+      if (cat.items && cat.items.length > 0 && cat.items[0] !== '') {
+        var emoji = {'Legumes':'🥕','Fruits':'🍎','Proteines':'🥩','Epicerie':'🛒','Autre':'📦'}[cat.nom] || '•';
+        html += '<div class="courses-cat"><div class="courses-cat-title">' + emoji + ' ' + cat.nom + '</div>';
+        cat.items.forEach(function(item, idx) {
+          var id = 'item-' + cat.nom + '-' + idx;
+          html += '<div class="course-item" id="' + id + '" onclick="toggleItem(\'' + id + '\')">' +
+            '<div class="course-check"></div>' +
+            '<span class="course-text">' + item + '</span>' +
+          '</div>';
+        });
+        html += '</div>';
+      }
+    });
+    html += '</div>';
+    html += '<p class="courses-note">Cliquez sur un article pour le cocher une fois achete.</p>';
+
+    document.getElementById('coursesContent').innerHTML = '<div class="fade-in">' + html + '</div>';
+  } catch(e) {
+    document.getElementById('coursesContent').innerHTML = '<p style="font-size:13px;color:var(--muted);">Erreur de chargement.</p>';
+  }
+}
+
+function toggleItem(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.toggle('checked');
 }
 
 function prefillQuestion(sujet) {
@@ -414,12 +515,10 @@ async function askQuestion() {
   input.value = '';
   var thread = document.getElementById('chatThread');
   var ub = document.createElement('div');
-  ub.className = 'bubble user fade-in';
-  ub.textContent = q;
+  ub.className = 'bubble user fade-in'; ub.textContent = q;
   thread.appendChild(ub);
   var ab = document.createElement('div');
-  ab.className = 'bubble ai fade-in';
-  ab.innerHTML = dots();
+  ab.className = 'bubble ai fade-in'; ab.innerHTML = dots();
   thread.appendChild(ab);
   ab.scrollIntoView({behavior:'smooth',block:'end'});
   var answer = await callAPI(contexte() + ' Question : "' + q + '". Reponds en 3-5 phrases, chaleureux et concret.');
