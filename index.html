@@ -45,8 +45,16 @@
   .dot:nth-child(2) { animation-delay:.2s; } .dot:nth-child(3) { animation-delay:.4s; }
   @keyframes pulse { 0%,100%{opacity:.3;transform:scale(.8)} 50%{opacity:1;transform:scale(1)} }
 
-  .refresh-btn { margin-top:.75rem; padding:6px 14px; border-radius:8px; border:1px solid var(--border); background:transparent; font-family:'DM Sans',sans-serif; font-size:12px; color:var(--muted); cursor:pointer; transition:all .15s; }
+  .btn-row { display:flex; gap:8px; margin-top:.75rem; flex-wrap:wrap; }
+  .refresh-btn { padding:6px 14px; border-radius:8px; border:1px solid var(--border); background:transparent; font-family:'DM Sans',sans-serif; font-size:12px; color:var(--muted); cursor:pointer; transition:all .15s; }
   .refresh-btn:hover { background:var(--cream); color:var(--charcoal); }
+  .lock-btn { padding:6px 14px; border-radius:8px; border:1px solid var(--sage); background:var(--sage-dark); font-family:'DM Sans',sans-serif; font-size:12px; color:white; cursor:pointer; transition:all .15s; }
+  .lock-btn:hover { background:var(--sage); }
+  .unlock-btn { padding:6px 14px; border-radius:8px; border:1px solid var(--terracotta); background:transparent; font-family:'DM Sans',sans-serif; font-size:12px; color:var(--terracotta); cursor:pointer; transition:all .15s; }
+  .unlock-btn:hover { background:var(--terra-light); }
+
+  .locked-banner { background:#EDF5EE; border:1px solid var(--sage-light); border-radius:8px; padding:.6rem 1rem; font-size:12px; color:var(--sage-dark); margin-bottom:1rem; display:flex; align-items:center; gap:8px; }
+  .locked-banner.hidden { display:none; }
 
   .domains { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin-bottom:1.25rem; }
   .domain-card { background:var(--warm-white); border:1px solid var(--border); border-radius:14px; padding:1.1rem; transition:all .2s; cursor:pointer; }
@@ -92,6 +100,7 @@
   /* MENU */
   .menu-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; margin-bottom:1.25rem; }
   .repas-card { background:var(--warm-white); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .repas-card.locked { border-color:var(--sage-light); }
   .repas-header { padding:.85rem 1.1rem; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); }
   .repas-jour { font-family:'Playfair Display',serif; font-size:14px; font-weight:400; flex:1; }
   .repas-type { font-size:10px; padding:2px 8px; border-radius:99px; font-weight:500; }
@@ -108,16 +117,15 @@
   .repas-footer { padding:.75rem 1.1rem; border-top:1px solid var(--border); display:flex; justify-content:flex-end; }
   .gen-btn { padding:5px 12px; border-radius:7px; border:1px solid var(--border); background:var(--cream); font-family:'DM Sans',sans-serif; font-size:12px; color:var(--sage-dark); cursor:pointer; transition:all .15s; }
   .gen-btn:hover { background:#EDF5EE; border-color:var(--sage-light); }
-  .gen-btn:disabled { opacity:0.5; cursor:default; }
+  .gen-btn:disabled { opacity:0.4; cursor:default; }
 
   /* COURSES */
   .courses-card { background:var(--warm-white); border:1px solid var(--border); border-radius:14px; padding:1.25rem; margin-bottom:1.25rem; }
   .courses-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap; gap:8px; }
   .courses-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:400; }
   .courses-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; }
-  .courses-cat { }
   .courses-cat-title { font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid var(--border); }
-  .course-item { display:flex; align-items:center; gap:8px; padding:5px 0; font-size:13px; color:var(--charcoal); cursor:pointer; }
+  .course-item { display:flex; align-items:center; gap:8px; padding:5px 0; font-size:13px; color:var(--charcoal); cursor:pointer; user-select:none; }
   .course-check { width:16px; height:16px; border-radius:4px; border:1.5px solid var(--sage-light); flex-shrink:0; transition:all .15s; display:flex; align-items:center; justify-content:center; }
   .course-item.checked .course-check { background:var(--sage); border-color:var(--sage); }
   .course-item.checked .course-check::after { content:'✓'; color:white; font-size:10px; }
@@ -224,8 +232,13 @@
       <div class="pills"><span class="pill">4 repas</span><span class="pill">Midi + Gouter</span><span class="pill">Allergenes indiques</span></div>
     </div>
     <div class="brief-text" id="menuIntro"><div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
-    <button class="refresh-btn" onclick="reloadMenu()">Regenerer tout le menu</button>
+    <div class="btn-row">
+      <button class="refresh-btn" id="btnNouveauMenu" onclick="nouveauMenu()">Nouveau menu</button>
+      <button class="lock-btn" id="btnLock" onclick="lockMenu()">🔒 Verrouiller ce menu</button>
+      <button class="unlock-btn hidden" id="btnUnlock" onclick="unlockMenu()">🔓 Deverrouiller</button>
+    </div>
   </div>
+  <div class="locked-banner hidden" id="lockedBanner">🔒 Menu verrouille — rechargez la page sans crainte, vos recettes sont sauvegardees.</div>
   <div class="menu-grid" id="menuGrid">
     <div style="grid-column:1/-1;padding:1rem;text-align:center;"><div class="loading-dots" style="justify-content:center"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
   </div>
@@ -238,7 +251,7 @@
   <div class="courses-card">
     <div class="courses-header">
       <div class="courses-title">Liste de courses</div>
-      <button class="refresh-btn" style="margin-top:0" onclick="loadCourses()">Actualiser</button>
+      <button class="refresh-btn" onclick="loadCourses()">Actualiser</button>
     </div>
     <div id="coursesContent"><div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>
   </div>
@@ -249,8 +262,8 @@
 var DATE_NAISSANCE = new Date("2025-11-02");
 var DATE_TERME     = new Date("2025-12-09");
 var menuLoaded = false;
-var coursesLoaded = false;
-var allIngredients = [];
+var isLocked = false;
+var currentMenu = [];
 
 function getAgeDetails() {
   var now = new Date();
@@ -285,7 +298,20 @@ function showTab(tab, el) {
   document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); });
   el.classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
-  if (tab === 'menu' && !menuLoaded) { loadMenu(); menuLoaded = true; }
+  if (tab === 'menu' && !menuLoaded) {
+    var saved = localStorage.getItem('elise_menu');
+    if (saved) {
+      try {
+        var data = JSON.parse(saved);
+        restoreMenu(data);
+        isLocked = true;
+        updateLockUI();
+      } catch(e) { loadMenu(); }
+    } else {
+      loadMenu();
+    }
+    menuLoaded = true;
+  }
   if (tab === 'courses') { loadCourses(); }
 }
 
@@ -335,47 +361,105 @@ function loadAll() { loadBrief(); loadDomains(); }
 
 function buildRepasPrompt(jour, type, extra) {
   var a = getAgeDetails();
-  extra = extra || '';
   return contexte() +
     ' Genere UNE recette de ' + type + ' pour le ' + jour + ' pour Elise a ' + a.mois + ' mois d\'age corrige. ' +
-    'Elle mange uniquement des legumes mixes pour l\'instant. ' +
-    (extra ? 'Genere une recette DIFFERENTE de : ' + extra + '. ' : '') +
-    'Reponds UNIQUEMENT en JSON valide sans backticks : ' +
-    '{"nom":"...","ingredients":"liste des ingredients avec quantites","preparation":"etapes courtes","quantite":"quantite totale pour bebe","allergenes":["liste allergenes ou tableau vide si aucun"]}';
+    'Elle mange uniquement des legumes mixes. ' +
+    (extra ? 'Recette DIFFERENTE de : ' + extra + '. ' : '') +
+    'JSON sans backticks : {"nom":"...","ingredients":"ingredients avec quantites","preparation":"etapes courtes","quantite":"quantite pour bebe","allergenes":["allergenes ou tableau vide"]}';
 }
 
-function renderRepasCard(r, jour, type, cardId) {
+function renderRepasCard(r, jour, type, cardId, locked) {
   var typeClass = type === 'Midi' ? 'type-midi' : 'type-gouter';
   var typeEmoji = type === 'Midi' ? '🍲' : '🍎';
-  var allergenesHtml = '';
-  if (r.allergenes && r.allergenes.length > 0) {
-    allergenesHtml = r.allergenes.map(function(a){ return '<span class="allergene-tag">⚠ ' + a + '</span>'; }).join('');
-  } else {
-    allergenesHtml = '<span class="allergene-none">Aucun allergene majeur</span>';
-  }
-  return '<div class="repas-card fade-in" id="' + cardId + '">' +
-    '<div class="repas-header">' +
-      '<span style="font-size:16px">' + typeEmoji + '</span>' +
-      '<div class="repas-jour">' + jour + '</div>' +
-      '<span class="repas-type ' + typeClass + '">' + type + '</span>' +
-    '</div>' +
+  var allergenesHtml = (r.allergenes && r.allergenes.length > 0 && r.allergenes[0] !== '')
+    ? r.allergenes.map(function(a){ return '<span class="allergene-tag">⚠ ' + a + '</span>'; }).join('')
+    : '<span class="allergene-none">Aucun allergene majeur</span>';
+  var footerHtml = locked
+    ? '<div class="repas-footer"><span style="font-size:11px;color:var(--sage-dark);">🔒 Verrouille</span></div>'
+    : '<div class="repas-footer"><button class="gen-btn" onclick="regenererRepas(\'' + cardId + '\',\'' + jour + '\',\'' + type + '\',\'' + r.nom.replace(/'/g,"\\'") + '\')">↺ Autre recette</button></div>';
+  return '<div class="repas-card' + (locked?' locked':'') + ' fade-in" id="' + cardId + '">' +
+    '<div class="repas-header"><span style="font-size:16px">' + typeEmoji + '</span>' +
+    '<div class="repas-jour">' + jour + '</div>' +
+    '<span class="repas-type ' + typeClass + '">' + type + '</span></div>' +
     '<div class="repas-body">' +
-      '<div class="repas-name">' + r.nom + '</div>' +
-      '<div class="repas-label">Ingredients</div>' +
-      '<div class="repas-val">' + r.ingredients + '</div>' +
-      '<div class="repas-label">Preparation</div>' +
-      '<div class="repas-val">' + r.preparation + '</div>' +
-      '<div class="repas-label">Allergenes</div>' +
-      '<div class="allergenes">' + allergenesHtml + '</div>' +
-      '<span class="repas-quantite">' + r.quantite + '</span>' +
-    '</div>' +
-    '<div class="repas-footer">' +
-      '<button class="gen-btn" onclick="regenererRepas(\'' + cardId + '\',\'' + jour + '\',\'' + type + '\',\'' + r.nom.replace(/'/g,"\\'") + '\')">↺ Autre recette</button>' +
-    '</div>' +
-  '</div>';
+    '<div class="repas-name">' + r.nom + '</div>' +
+    '<div class="repas-label">Ingredients</div><div class="repas-val">' + r.ingredients + '</div>' +
+    '<div class="repas-label">Preparation</div><div class="repas-val">' + r.preparation + '</div>' +
+    '<div class="repas-label">Allergenes</div><div class="allergenes">' + allergenesHtml + '</div>' +
+    '<span class="repas-quantite">' + r.quantite + '</span>' +
+    '</div>' + footerHtml + '</div>';
+}
+
+function restoreMenu(data) {
+  currentMenu = data.repas;
+  document.getElementById('menuIntro').innerHTML = '<span class="fade-in">' + data.intro + '</span>';
+  document.getElementById('menuGrid').innerHTML = '';
+  data.repas.forEach(function(item) {
+    var div = document.createElement('div');
+    div.innerHTML = renderRepasCard(item.r, item.jour, item.type, item.cardId, true);
+    document.getElementById('menuGrid').appendChild(div.firstChild);
+  });
+}
+
+function lockMenu() {
+  if (currentMenu.length === 0) { alert('Attendez que toutes les recettes soient chargees.'); return; }
+  var intro = document.getElementById('menuIntro').textContent;
+  var data = { intro: intro, repas: currentMenu };
+  localStorage.setItem('elise_menu', JSON.stringify(data));
+  isLocked = true;
+  updateLockUI();
+  // Re-render with lock state
+  document.getElementById('menuGrid').innerHTML = '';
+  currentMenu.forEach(function(item) {
+    var div = document.createElement('div');
+    div.innerHTML = renderRepasCard(item.r, item.jour, item.type, item.cardId, true);
+    document.getElementById('menuGrid').appendChild(div.firstChild);
+  });
+}
+
+function unlockMenu() {
+  localStorage.removeItem('elise_menu');
+  isLocked = false;
+  updateLockUI();
+  // Re-render without lock
+  document.getElementById('menuGrid').innerHTML = '';
+  currentMenu.forEach(function(item) {
+    var div = document.createElement('div');
+    div.innerHTML = renderRepasCard(item.r, item.jour, item.type, item.cardId, false);
+    document.getElementById('menuGrid').appendChild(div.firstChild);
+  });
+}
+
+function nouveauMenu() {
+  if (isLocked) {
+    if (!confirm('Le menu est verrouille. Voulez-vous vraiment generer un nouveau menu et perdre le menu actuel ?')) return;
+    localStorage.removeItem('elise_menu');
+    isLocked = false;
+  }
+  currentMenu = [];
+  menuLoaded = false;
+  loadMenu();
+  menuLoaded = true;
+}
+
+function updateLockUI() {
+  var banner = document.getElementById('lockedBanner');
+  var btnLock = document.getElementById('btnLock');
+  var btnUnlock = document.getElementById('btnUnlock');
+  var btnNouveau = document.getElementById('btnNouveauMenu');
+  if (isLocked) {
+    banner.classList.remove('hidden');
+    btnLock.classList.add('hidden');
+    btnUnlock.classList.remove('hidden');
+  } else {
+    banner.classList.add('hidden');
+    btnLock.classList.remove('hidden');
+    btnUnlock.classList.add('hidden');
+  }
 }
 
 async function regenererRepas(cardId, jour, type, nomActuel) {
+  if (isLocked) return;
   var card = document.getElementById(cardId);
   var btn = card.querySelector('.gen-btn');
   btn.disabled = true; btn.textContent = '...';
@@ -385,35 +469,22 @@ async function regenererRepas(cardId, jour, type, nomActuel) {
     var r = JSON.parse(raw.replace(/```json|```/g,'').trim());
     var el = document.getElementById(cardId);
     if (el) {
-      el.outerHTML = renderRepasCard(r, jour, type, cardId);
-      updateIngredients();
+      el.outerHTML = renderRepasCard(r, jour, type, cardId, false);
+      // update currentMenu
+      for (var i = 0; i < currentMenu.length; i++) {
+        if (currentMenu[i].cardId === cardId) { currentMenu[i].r = r; break; }
+      }
     }
-  } catch(e) { btn.disabled = false; btn.textContent = '↺ Autre recette'; }
-}
-
-function updateIngredients() {
-  allIngredients = [];
-  document.querySelectorAll('.repas-val').forEach(function(el, i) {
-    if (i % 2 === 0) {
-      var txt = el.textContent.trim();
-      if (txt) allIngredients.push(txt);
-    }
-  });
-}
-
-async function reloadMenu() {
-  menuLoaded = false;
-  coursesLoaded = false;
-  allIngredients = [];
-  loadMenu();
-  menuLoaded = true;
+  } catch(e) { if(btn){ btn.disabled = false; btn.textContent = '↺ Autre recette'; } }
 }
 
 async function loadMenu() {
   var a = getAgeDetails();
+  currentMenu = [];
   document.getElementById('menuIntro').innerHTML = dots();
   document.getElementById('menuGrid').innerHTML = '<div style="grid-column:1/-1;padding:1rem;text-align:center;">' + dots() + '</div>';
-  allIngredients = [];
+  isLocked = false;
+  updateLockUI();
 
   var introText = await callAPI(contexte() + ' En 2 phrases, presente le menu de diversification de la semaine pour Elise a ' + a.mois + ' mois corrige qui mange des legumes mixes.');
   document.getElementById('menuIntro').innerHTML = '<span class="fade-in">' + introText + '</span>';
@@ -426,10 +497,8 @@ async function loadMenu() {
   ];
 
   document.getElementById('menuGrid').innerHTML = '';
-  var promises = [];
 
-  for (var i = 0; i < jours.length; i++) {
-    var j = jours[i];
+  var promises = jours.map(function(j) {
     var cardId = 'repas-' + j.jour + '-' + j.type;
     var placeholder = document.createElement('div');
     placeholder.className = 'repas-card';
@@ -437,19 +506,15 @@ async function loadMenu() {
     placeholder.innerHTML = '<div class="repas-header"><span style="font-size:16px">' + (j.type==='Midi'?'🍲':'🍎') + '</span><div class="repas-jour">' + j.jour + '</div><span class="repas-type ' + (j.type==='Midi'?'type-midi':'type-gouter') + '">' + j.type + '</span></div><div class="repas-body">' + dots() + '</div>';
     document.getElementById('menuGrid').appendChild(placeholder);
 
-    promises.push((function(jour, type, cid) {
-      return callAPI(buildRepasPrompt(jour, type, ''), 'Reponds UNIQUEMENT en JSON valide sans backticks.').then(function(raw) {
-        try {
-          var r = JSON.parse(raw.replace(/```json|```/g,'').trim());
-          var el = document.getElementById(cid);
-          if (el) {
-            el.outerHTML = renderRepasCard(r, jour, type, cid);
-            allIngredients.push(r.ingredients);
-          }
-        } catch(e) {}
-      });
-    })(j.jour, j.type, cardId));
-  }
+    return callAPI(buildRepasPrompt(j.jour, j.type, ''), 'Reponds UNIQUEMENT en JSON valide sans backticks.').then(function(raw) {
+      try {
+        var r = JSON.parse(raw.replace(/```json|```/g,'').trim());
+        var el = document.getElementById(cardId);
+        if (el) el.outerHTML = renderRepasCard(r, j.jour, j.type, cardId, false);
+        currentMenu.push({ jour:j.jour, type:j.type, cardId:cardId, r:r });
+      } catch(e) {}
+    });
+  });
 
   await Promise.all(promises);
 }
@@ -457,22 +522,35 @@ async function loadMenu() {
 async function loadCourses() {
   document.getElementById('coursesContent').innerHTML = dots();
 
-  if (allIngredients.length === 0) {
+  var saved = localStorage.getItem('elise_menu');
+  var ingredients = [];
+
+  if (saved) {
+    try {
+      var data = JSON.parse(saved);
+      data.repas.forEach(function(item){ if(item.r && item.r.ingredients) ingredients.push(item.r.ingredients); });
+    } catch(e) {}
+  } else if (currentMenu.length > 0) {
+    currentMenu.forEach(function(item){ if(item.r && item.r.ingredients) ingredients.push(item.r.ingredients); });
+  }
+
+  if (ingredients.length === 0) {
     document.getElementById('coursesContent').innerHTML =
-      '<p style="font-size:13px;color:var(--muted);">Consultez d\'abord l\'onglet "Menu de la semaine" pour generer les recettes, puis revenez ici.</p>';
+      '<p style="font-size:13px;color:var(--muted);line-height:1.7;">Consultez d\'abord l\'onglet <strong>Menu de la semaine</strong> pour generer les recettes, puis revenez ici.</p>';
     return;
   }
 
-  var prompt = 'Voici la liste des ingredients des repas de la semaine pour un bebe en diversification : ' +
-    allIngredients.join(' / ') +
-    '. Consolide tous ces ingredients en une liste de courses organisee par categorie (Legumes, Fruits, Proteines, Epicerie, Autre). ' +
-    'Regroupe les doublons et indique les quantites totales. ' +
-    'Reponds UNIQUEMENT en JSON valide sans backticks : ' +
-    '{"categories":[{"nom":"Legumes","items":["..."]},{"nom":"Fruits","items":["..."]},{"nom":"Proteines","items":["..."]},{"nom":"Epicerie","items":["..."]},{"nom":"Autre","items":["..."]}]}';
+  var prompt = 'Voici les ingredients des repas de la semaine pour un bebe en diversification : ' +
+    ingredients.join(' / ') +
+    '. Consolide en liste de courses par categorie (Legumes, Fruits, Proteines, Epicerie, Autre). Regroupe les doublons avec quantites totales. ' +
+    'JSON sans backticks : {"categories":[{"nom":"Legumes","items":["..."]},{"nom":"Fruits","items":["..."]},{"nom":"Proteines","items":["..."]},{"nom":"Epicerie","items":["..."]},{"nom":"Autre","items":["..."]}]}';
 
   try {
     var raw = await callAPI(prompt, 'Tu es un assistant cuisine. Reponds UNIQUEMENT en JSON valide sans backticks.');
     var json = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+    // Restore checked state
+    var checked = JSON.parse(localStorage.getItem('elise_courses_checked') || '{}');
 
     var html = '<div class="courses-grid">';
     json.categories.forEach(function(cat) {
@@ -481,17 +559,14 @@ async function loadCourses() {
         html += '<div class="courses-cat"><div class="courses-cat-title">' + emoji + ' ' + cat.nom + '</div>';
         cat.items.forEach(function(item, idx) {
           var id = 'item-' + cat.nom + '-' + idx;
-          html += '<div class="course-item" id="' + id + '" onclick="toggleItem(\'' + id + '\')">' +
-            '<div class="course-check"></div>' +
-            '<span class="course-text">' + item + '</span>' +
-          '</div>';
+          var isChecked = checked[id] ? ' checked' : '';
+          html += '<div class="course-item' + isChecked + '" id="' + id + '" onclick="toggleItem(\'' + id + '\')">' +
+            '<div class="course-check"></div><span class="course-text">' + item + '</span></div>';
         });
         html += '</div>';
       }
     });
-    html += '</div>';
-    html += '<p class="courses-note">Cliquez sur un article pour le cocher une fois achete.</p>';
-
+    html += '</div><p class="courses-note">Cochez les articles au fur et a mesure de vos achats.</p>';
     document.getElementById('coursesContent').innerHTML = '<div class="fade-in">' + html + '</div>';
   } catch(e) {
     document.getElementById('coursesContent').innerHTML = '<p style="font-size:13px;color:var(--muted);">Erreur de chargement.</p>';
@@ -500,7 +575,11 @@ async function loadCourses() {
 
 function toggleItem(id) {
   var el = document.getElementById(id);
-  if (el) el.classList.toggle('checked');
+  if (!el) return;
+  el.classList.toggle('checked');
+  var checked = JSON.parse(localStorage.getItem('elise_courses_checked') || '{}');
+  checked[id] = el.classList.contains('checked');
+  localStorage.setItem('elise_courses_checked', JSON.stringify(checked));
 }
 
 function prefillQuestion(sujet) {
